@@ -13,6 +13,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   useColorScheme,
   View,
 } from 'react-native';
@@ -24,6 +25,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {Toto} from './Toto';
+import useBLE from './useBLE';
+// import {Device} from 'react-native-ble-plx';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -56,6 +60,19 @@ function Section({children, title}: SectionProps): JSX.Element {
 }
 
 function App(): JSX.Element {
+  // const {requestPermissions, scanForDevices, allDevices} = useBLE();
+  const {requestPermissions} = useBLE();
+
+  const openModal = async () => {
+    requestPermissions((isGranted: boolean) => {
+      // if (isGranted) {
+      //   scanForDevices();
+      // }
+      alert('The Android Permission is Granted' + isGranted);
+      // alert('The Android Permission is Granted');
+    });
+  };
+
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -80,6 +97,17 @@ function App(): JSX.Element {
             Edit <Text style={styles.highlight}>App.tsx</Text> to change this
             screen and then come back to see your edits.
           </Section>
+          <Section title="Step Toto">
+            <Toto />
+          </Section>
+          <Section title="Step Bluetooth">
+            <TouchableOpacity onPress={openModal}>
+              <Text>{'Connect'}</Text>
+              {/* {allDevices.map((device: Device) => (
+                <Text>{device.name}</Text>
+              ))} */}
+            </TouchableOpacity>
+          </Section>
           <Section title="See Your Changes">
             <ReloadInstructions />
           </Section>
@@ -96,7 +124,7 @@ function App(): JSX.Element {
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   sectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
