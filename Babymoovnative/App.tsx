@@ -5,121 +5,55 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  useColorScheme,
   View,
 } from 'react-native';
+import {Device} from 'react-native-ble-plx';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import {Toto} from './Toto';
+import DeviceModal from './DeviceConnectionModal';
 import useBLE from './useBLE';
-// import {Device} from 'react-native-ble-plx';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
 
 function App(): JSX.Element {
-  // const {requestPermissions, scanForDevices, allDevices} = useBLE();
-  const {requestPermissions} = useBLE();
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+
+  const {requestPermissions, scanForDevices, allDevices} = useBLE();
+
+  const hideModal = () => {
+    setIsModalVisible(false);
+  };
 
   const openModal = async () => {
+    // setIsModalVisible(true);
     requestPermissions((isGranted: boolean) => {
-      // if (isGranted) {
-      //   scanForDevices();
-      // }
-      alert('The Android Permission is Granted' + isGranted);
-      // alert('The Android Permission is Granted');
+      if (isGranted) {
+        scanForDevices();
+      }
+      // alert('Totot: ' + isGranted);
     });
   };
 
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.heartRateTitleWrapper}>
+        <Text style={styles.heartRateTitleText}>BABYMOOV swing</Text>
+        {allDevices.map((device: Device) => (
+          <Text>{device.name}</Text>
+        ))}
+      </View>
+      <TouchableOpacity onPress={openModal} style={styles.ctaButton}>
+        <Text style={styles.ctaButtonText}>{'Bluetooth'}</Text>
+      </TouchableOpacity>
+      <DeviceModal
+        closeModal={hideModal}
+        visible={isModalVisible}
+        connectToPeripheral={hideModal}
+        devices={[]}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="Step Toto">
-            <Toto />
-          </Section>
-          <Section title="Step Bluetooth">
-            <TouchableOpacity onPress={openModal}>
-              <Text>{'Connect'}</Text>
-              {/* {allDevices.map((device: Device) => (
-                <Text>{device.name}</Text>
-              ))} */}
-            </TouchableOpacity>
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -140,6 +74,40 @@ export const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#f2f2f2',
+  },
+  heartRateTitleWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  heartRateTitleText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginHorizontal: 20,
+    color: 'black',
+  },
+  heartRateText: {
+    fontSize: 25,
+    marginTop: 15,
+  },
+  ctaButton: {
+    backgroundColor: 'purple',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 50,
+    marginHorizontal: 20,
+    marginBottom: 5,
+    borderRadius: 8,
+  },
+  ctaButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'white',
   },
 });
 
