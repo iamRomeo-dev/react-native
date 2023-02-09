@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Device} from 'react-native-ble-plx';
+// import {Device} from 'react-native-ble-plx';
 
 import DeviceModal from './DeviceConnectionModal';
 import useBLE from './useBLE';
@@ -21,38 +21,55 @@ import useBLE from './useBLE';
 function App(): JSX.Element {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
-  const {requestPermissions, scanForDevices, allDevices} = useBLE();
+  const {
+    requestPermissions,
+    connectToDevice,
+    scanForDevices,
+    disconnectFromDevice,
+    allDevices,
+    currentDevice,
+    heartRate,
+  } = useBLE();
 
   const hideModal = () => {
     setIsModalVisible(false);
   };
 
   const openModal = async () => {
-    // setIsModalVisible(true);
     requestPermissions((isGranted: boolean) => {
       if (isGranted) {
         scanForDevices();
+        setIsModalVisible(true);
       }
-      // alert('Totot: ' + isGranted);
     });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.heartRateTitleWrapper}>
-        <Text style={styles.heartRateTitleText}>BABYMOOV swing</Text>
-        {allDevices.map((device: Device) => (
+        {currentDevice ? (
+          <Text style={styles.heartRateTitleText}>Connected</Text>
+        ) : (
+          <Text style={styles.heartRateTitleText}>
+            Please connectto the baby swing
+          </Text>
+        )}
+        {/* {allDevices.map((device: Device) => (
           <Text>{device.name}</Text>
-        ))}
+        ))} */}
       </View>
-      <TouchableOpacity onPress={openModal} style={styles.ctaButton}>
-        <Text style={styles.ctaButtonText}>{'Bluetooth'}</Text>
+      <TouchableOpacity
+        onPress={currentDevice ? disconnectFromDevice : openModal}
+        style={styles.ctaButton}>
+        <Text style={styles.ctaButtonText}>
+          {currentDevice ? 'Disconnect' : 'Connect'}
+        </Text>
       </TouchableOpacity>
       <DeviceModal
         closeModal={hideModal}
         visible={isModalVisible}
-        connectToPeripheral={hideModal}
-        devices={[]}
+        connectToPeripheral={connectToDevice}
+        devices={allDevices}
       />
     </SafeAreaView>
   );
