@@ -18,6 +18,7 @@ function App() {
     connectToDevice,
     scanForDevices,
     disconnectFromDevice,
+    startDisplayMusic,
     allDevices,
     currentDevice,
     status,
@@ -42,7 +43,6 @@ function App() {
           </Text>
         )}
       </View>
-
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
@@ -52,6 +52,16 @@ function App() {
           <Text style={styles.ctaButtonText}>
             {allDevices[0]?.name} {currentDevice && ' - connecté'}
           </Text>
+        </TouchableOpacity>
+      )}
+
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            startDisplayMusic(allDevices[0]);
+          }}
+          style={styles.ctaButton}>
+          <Text style={styles.ctaButtonText}>Play music</Text>
         </TouchableOpacity>
       )}
 

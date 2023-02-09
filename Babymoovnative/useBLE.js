@@ -5,12 +5,15 @@ import {btoa, atob} from 'react-native-quick-base64';
 
 const bleManager = new BleManager();
 
+const NEXT_MUSIC = '55E0A10000000000000000BB';
+
 export default function useBLE() {
   const [allDevices, setAllDevices] = useState([]);
   const [currentDevice, setConnectedDevice] = useState(null);
   const [heartRate, setHeartRate] = useState(0);
   const [status, setStatus] = useState('');
-
+  const [message, setMessage] = useState('');
+  console.log('message', message);
   const requestPermissions = async callback => {
     if (Platform.OS === 'android') {
       const granted = await PermissionsAndroid.request(
@@ -59,8 +62,8 @@ export default function useBLE() {
       console.log('Connecté');
       setStatus('CONNECT');
     } catch (e) {
-      console.log('FAILED TO CONNECT', e);
       setStatus('FAILED TO CONNECT');
+      console.log('FAILED TO CONNECT', e);
     }
   };
 
@@ -74,27 +77,52 @@ export default function useBLE() {
   };
 
   const startStreamingData = async device => {
-    console.log('startStreamingData');
     if (device) {
-      // device.monitorCharacteristicForService(
-      //   'AE00',
-      //   'AE04',
-      //   (error, characteristic) => onHeartRateUpdate(error, characteristic),
-      // );
-      bleManager
-        .writeCharacteristicWithoutResponseForDevice(
-          device.id,
-          'AE00',
-          'AE01',
-          btoa('55E0A000000000000000BB'),
-        )
-        .then(res => {
-          console.log('tototo');
-          console.log(res.value);
-          return res.value;
-        });
-    } else {
-      console.log('No Device Connected');
+      device.monitorCharacteristicForService(
+        '0000ae00-0000-1000-8000-00805f9b34fb',
+        '0000ae04-0000-1000-8000-00805f9b34fb',
+        (error, characteristic) => onHeartRateUpdate(error, characteristic),
+      );
+    }
+  };
+
+  const base64ToHex = str => {
+    const raw = atob(str);
+    let result = '';
+    for (let i = 0; i < raw.length; i++) {
+      const hex = raw.charCodeAt(i).toString(16);
+      result += hex.length === 2 ? hex : '0' + hex;
+    }
+    return result.toUpperCase();
+  };
+
+  // Hex to Base64
+  const hexToBase64 = str => {
+    return btoa(
+      String.fromCharCode.apply(
+        null,
+        str
+          .replace(/\r|\n/g, '')
+          .replace(/([\da-fA-F]{2}) ?/g, '0x$1 ')
+          .replace(/ +$/, '')
+          .split(' '),
+      ),
+    );
+  };
+
+  const startDisplayMusic = async device => {
+    console.log(NEXT_MUSIC);
+    console.log(hexToBase64(NEXT_MUSIC));
+    try {
+      await bleManager.writeCharacteristicWithoutResponseForDevice(
+        device.id,
+        '0000ae00-0000-1000-8000-00805f9b34fb',
+        '0000ae01-0000-1000-8000-00805f9b34fb',
+        hexToBase64('55E0A10000000000000000BB'), //55 E0 A0 00 00 00 00 00 00 00 00 BB
+        //55 E0 A1 00 00 00 00 00 00 00 00 BB
+      );
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -107,22 +135,8 @@ export default function useBLE() {
       console.log('No Data was recieved');
       return;
     }
-    console.log('rawData1111');
-    const rawData = atob(characteristic.value);
-    console.log('rawData', rawData);
-    let innerHeartRate = -1;
 
-    const firstBitValue = Number(rawData) & 0x01;
-
-    if (firstBitValue === 0) {
-      innerHeartRate = rawData[1].charCodeAt(0);
-    } else {
-      innerHeartRate =
-        Number(rawData[1].charCodeAt(0) << 8) +
-        Number(rawData[2].charCodeAt(2));
-    }
-
-    setHeartRate(innerHeartRate);
+    console.log(base64ToHex(characteristic.value));
   };
 
   return {
@@ -130,6 +144,7 @@ export default function useBLE() {
     connectToDevice,
     scanForDevices,
     disconnectFromDevice,
+    startDisplayMusic,
     allDevices,
     currentDevice,
     heartRate,
