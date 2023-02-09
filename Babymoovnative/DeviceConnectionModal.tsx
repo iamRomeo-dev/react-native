@@ -25,7 +25,7 @@ type DeviceModalProps = {
 
 const DeviceModalListItem: FC<DeviceModalListItemProps> = props => {
   const {item, connectToPeripheral, closeModal} = props;
-
+  console.log('item.itzem', item);
   const connectAndCloseModal = useCallback(() => {
     connectToPeripheral(item.item);
     closeModal();
@@ -42,9 +42,10 @@ const DeviceModalListItem: FC<DeviceModalListItemProps> = props => {
 
 const DeviceModal: FC<DeviceModalProps> = props => {
   const {devices, visible, connectToPeripheral, closeModal} = props;
-
+  console.log('devices', devices);
   const renderDeviceModalListItem = useCallback(
-    (item: ListRenderItemInfo<Device>) => {
+    item => {
+      console.log('item', item);
       return (
         <DeviceModalListItem
           item={item}

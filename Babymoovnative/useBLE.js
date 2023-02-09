@@ -3,27 +3,15 @@ import {PermissionsAndroid, Platform} from 'react-native';
 import {BleManager, Device} from 'react-native-ble-plx';
 import {btoa, atob} from 'react-native-quick-base64';
 
-type PermissionCallback = (result: boolean) => void;
-
 const bleManager = new BleManager();
 
-interface BluetoothLowEnergyApi {
-  requestPermissions(callback: PermissionCallback): Promise<void>;
-  connectToDevice(device: Device): Promise<void>;
-  connectToDevice: (deviceId: Device) => Promise<void>;
-  scanForDevices(): void;
-  disconnectFromDevice: () => void;
-  currentDevice: Device | null;
-  heartRate: number;
-  allDevices: Device[];
-}
+export default function useBLE() {
+  const [allDevices, setAllDevices] = useState([]);
+  const [currentDevice, setConnectedDevice] = useState(null);
+  const [heartRate, setHeartRate] = useState(0);
+  const [status, setStatus] = useState('');
 
-export default function useBLE(): BluetoothLowEnergyApi {
-  const [allDevices, setAllDevices] = useState<Device[]>([]);
-  const [currentDevice, setConnectedDevice] = useState<Device | null>(null);
-  const [heartRate, setHeartRate] = useState<number>(0);
-
-  const requestPermissions = async (callback: PermissionCallback) => {
+  const requestPermissions = async callback => {
     if (Platform.OS === 'android') {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -41,15 +29,16 @@ export default function useBLE(): BluetoothLowEnergyApi {
     }
   };
 
-  const isDuplicteDevice = (devices: Device[], nextDevice: Device) =>
+  const isDuplicteDevice = (devices, nextDevice) =>
     devices.findIndex(device => nextDevice.id === device.id) > -1;
 
   const scanForDevices = () => {
     bleManager.startDeviceScan(null, null, (error, device) => {
       if (error) {
+        console.log('scanForDeviceserror');
         console.log(error);
       }
-      if (device && device.name?.includes('BABYMOOV')) {
+      if (device && device.name?.includes('BABYMOOV(BLE')) {
         setAllDevices(prevState => {
           if (!isDuplicteDevice(prevState, device)) {
             return [...prevState, device];
@@ -60,27 +49,18 @@ export default function useBLE(): BluetoothLowEnergyApi {
     });
   };
 
-  // const connectToDevice = async (device: Device) => {
-  //   try {
-  //     const deviceConnection = await bleManager.connectToDevice(device.id);
-  //     setConnectedDevice(deviceConnection);
-  //     await deviceConnection.discoverAllServicesAndCharacteristics();
-  //     startStreamingData(device);
-  //   } catch (e) {
-  //     console.log('FAILED TO CONNECT', e);
-  //   }
-  // };
-
-  const connectToDevice = async (device: Device) => {
+  const connectToDevice = async device => {
     try {
       const deviceConnection = await bleManager.connectToDevice(device.id);
       setConnectedDevice(deviceConnection);
       await deviceConnection.discoverAllServicesAndCharacteristics();
-      bleManager.stopDeviceScan();
+      // bleManager.stopDeviceScan();
       startStreamingData(deviceConnection);
       console.log('Connecté');
+      setStatus('CONNECT');
     } catch (e) {
       console.log('FAILED TO CONNECT', e);
+      setStatus('FAILED TO CONNECT');
     }
   };
 
@@ -93,55 +73,46 @@ export default function useBLE(): BluetoothLowEnergyApi {
     }
   };
 
-  // const startStreamingData = async (device: Device) => {
-  //   console.log('1234');
-  //   if (device) {
-  //     device.monitorCharacteristicForService('AE00', 'AE01', onHeartRateUpdate);
-  //     device
-  //       .writeCharacteristicWithResponseForService(
-  //         'AE00',
-  //         'AE01',
-  //         btoa('55E0A000000000000000BB'),
-  //       )
-  //       .then(characteristic => {
-  //         console.log('aaaaaaaa', characteristic.value);
-  //         return;
-  //       });
-  //   } else {
-  //     console.log('No Device Connected');
-  //   }
-  // };
-
-  const startStreamingData = async (device: Device) => {
+  const startStreamingData = async device => {
     console.log('startStreamingData');
     if (device) {
-      device.monitorCharacteristicForService(
-        'AE00',
-        'AE01',
-        (error, characteristic) => onHeartRateUpdate(error, characteristic),
-      );
+      // device.monitorCharacteristicForService(
+      //   'AE00',
+      //   'AE04',
+      //   (error, characteristic) => onHeartRateUpdate(error, characteristic),
+      // );
+      bleManager
+        .writeCharacteristicWithoutResponseForDevice(
+          device.id,
+          'AE00',
+          'AE01',
+          btoa('55E0A000000000000000BB'),
+        )
+        .then(res => {
+          console.log('tototo');
+          console.log(res.value);
+          return res.value;
+        });
     } else {
       console.log('No Device Connected');
     }
   };
 
-  const onHeartRateUpdate = (
-    error: BleError | null,
-    characteristic: Characteristic | null,
-  ) => {
+  const onHeartRateUpdate = (error, characteristic) => {
     if (error) {
+      console.log('error onHeartRateUpdate');
       console.log(error);
       return;
     } else if (!characteristic?.value) {
       console.log('No Data was recieved');
       return;
     }
-
+    console.log('rawData1111');
     const rawData = atob(characteristic.value);
     console.log('rawData', rawData);
-    let innerHeartRate: number = -1;
+    let innerHeartRate = -1;
 
-    const firstBitValue: number = Number(rawData) & 0x01;
+    const firstBitValue = Number(rawData) & 0x01;
 
     if (firstBitValue === 0) {
       innerHeartRate = rawData[1].charCodeAt(0);
@@ -162,5 +133,6 @@ export default function useBLE(): BluetoothLowEnergyApi {
     allDevices,
     currentDevice,
     heartRate,
+    status,
   };
 }

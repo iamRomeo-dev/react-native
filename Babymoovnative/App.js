@@ -1,10 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React, {useState} from 'react';
 import {
   SafeAreaView,
@@ -16,11 +9,10 @@ import {
 // import {Device} from 'react-native-ble-plx';
 
 import DeviceModal from './DeviceConnectionModal';
+import {Toto} from './Toto';
 import useBLE from './useBLE';
 
-function App(): JSX.Element {
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-
+function App() {
   const {
     requestPermissions,
     connectToDevice,
@@ -28,49 +20,48 @@ function App(): JSX.Element {
     disconnectFromDevice,
     allDevices,
     currentDevice,
+    status,
     heartRate,
   } = useBLE();
 
-  const hideModal = () => {
-    setIsModalVisible(false);
-  };
-
   const openModal = async () => {
-    requestPermissions((isGranted: boolean) => {
+    requestPermissions(isGranted => {
       if (isGranted) {
         scanForDevices();
-        setIsModalVisible(true);
       }
     });
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.heartRateTitleWrapper}>
         {currentDevice ? (
-          <Text style={styles.heartRateTitleText}>Connected</Text>
+          <Text style={styles.heartRateTitleText}>{status}</Text>
         ) : (
           <Text style={styles.heartRateTitleText}>
-            Please connectto the baby swing
+            Please connect to the baby swing
           </Text>
         )}
-        {/* {allDevices.map((device: Device) => (
-          <Text>{device.name}</Text>
-        ))} */}
       </View>
+
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            connectToDevice(allDevices[0]);
+          }}
+          style={styles.ctaButton}>
+          <Text style={styles.ctaButtonText}>
+            {allDevices[0]?.name} {currentDevice && ' - connecté'}
+          </Text>
+        </TouchableOpacity>
+      )}
+
       <TouchableOpacity
         onPress={currentDevice ? disconnectFromDevice : openModal}
         style={styles.ctaButton}>
         <Text style={styles.ctaButtonText}>
-          {currentDevice ? 'Disconnect' : 'Connect'}
+          {currentDevice ? 'Disconnect' : 'Scan'}
         </Text>
       </TouchableOpacity>
-      <DeviceModal
-        closeModal={hideModal}
-        visible={isModalVisible}
-        connectToPeripheral={connectToDevice}
-        devices={allDevices}
-      />
     </SafeAreaView>
   );
 }
