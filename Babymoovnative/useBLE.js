@@ -12,25 +12,42 @@ const CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID =
 const CHARACTERISTIC_AE04_NOTIFY_UUID = '0000ae04-0000-1000-8000-00805f9b34fb';
 
 // SWING GENERAL ACTION
-const POWER_OFF = '55E1900000000000000000BB';
+export const POWER_OFF = '55E1900000000000000000BB';
 
 // MUSIC ACTION
-const PLAY_PAUSE_MUSIC = '55E0A00000000000000000BB';
-const PREVIOUS_MUSIC = '55E0A11000000000000000BB';
-const NEXT_MUSIC = '55E0A10000000000000000BB';
-const VOLUME_MINUS_MUSIC = '55E0A31000000000000000BB';
-const VOLUME_PLUS_MUSIC = '55E0A30000000000000000BB';
+export const PLAY_PAUSE_MUSIC = '55E0A00000000000000000BB';
+export const PREVIOUS_MUSIC = '55E0A11000000000000000BB';
+export const NEXT_MUSIC = '55E0A10000000000000000BB';
+export const VOLUME_MINUS_MUSIC = '55E0A31000000000000000BB';
+export const VOLUME_PLUS_MUSIC = '55E0A30000000000000000BB';
 
 //MOVEMENT ACTION
-const SWING_ON = '55E1910100000000000000BB';
-const SWING_OFF = '55E1910000000000000000BB';
-const SWING_MODE_O = '55E1910101000000000000BB';
-const SWING_MODE_U = '55E1910102000000000000BB';
-const SWING_MODE_M = '55E1910103000000000000BB';
-const SWING_MODE_8 = '55E1910104000000000000BB';
-const SWING_MODE_H = '55E1910105000000000000BB';
-const SWING_MODE_V = '55E1910106000000000000BB';
-const SWING_MODE_MIX = '55E1910107000000000000BB';
+export const SWING_ON = '55E1910100000000000000BB';
+export const SWING_OFF = '55E1910000000000000000BB';
+export const SWING_MODE_O = '55E1910101000000000000BB';
+export const SWING_MODE_U = '55E1910102000000000000BB';
+export const SWING_MODE_M = '55E1910103000000000000BB';
+export const SWING_MODE_8 = '55E1910104000000000000BB';
+export const SWING_MODE_H = '55E1910105000000000000BB';
+export const SWING_MODE_V = '55E1910106000000000000BB';
+export const SWING_MODE_MIX = '55E1910107000000000000BB';
+
+//MOVEMENT SPEED
+export const SPEED_OFF = '55E1920000000000000000BB';
+export const SPEED_1 = '55E1920100000000000000BB';
+export const SPEED_2 = '55E1920200000000000000BB';
+export const SPEED_3 = '55E1920300000000000000BB';
+export const SPEED_4 = '55E1920400000000000000BB';
+export const SPEED_5 = '55E1920500000000000000BB';
+
+//TIMER
+export const TIMER_NONE = '55E1930000000000000000BB';
+export const TIMER_10_MIN = '55E1930100000000000000BB';
+export const TIMER_20_MIN = '55E1930200000000000000BB';
+export const TIMER_30_MIN = '55E1930300000000000000BB';
+
+//TIMER
+export const CRY_DETECTION_SWITCH = '55E1940000000000000000BB';
 
 export default function useBLE() {
   const [allDevices, setAllDevices] = useState([]);
@@ -150,201 +167,17 @@ export default function useBLE() {
     console.log(base64ToHex(characteristic.value));
   };
 
-  // ====== WRITE_WITHOUT_RESPONSE MUSIC TO CONTROL THE DEVICE ======
-  const previousMusicDisplayMusic = async device => {
+  // ====== WRITE_WITHOUT_RESPONSE TO CONTROL THE DEVICE ======
+  const swingActionDisplay = async (device, bytes) => {
     try {
       await bleManager.writeCharacteristicWithoutResponseForDevice(
         device.id,
         PRIMARY_SERVICE_AE00_UUID,
         CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(PREVIOUS_MUSIC),
+        hexToBase64(bytes),
       );
     } catch (e) {
-      console.log('previousMusicDisplayMusic', e);
-    }
-  };
-
-  const nextMusicDisplayMusic = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(NEXT_MUSIC),
-      );
-    } catch (e) {
-      console.log('nextMusicDisplayMusic', e);
-    }
-  };
-
-  const playPauseDisplayMusic = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(PLAY_PAUSE_MUSIC),
-      );
-    } catch (e) {
-      console.log('playPauseDisplayMusic', e);
-    }
-  };
-
-  const volumePlusDisplayMusic = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(VOLUME_PLUS_MUSIC),
-      );
-    } catch (e) {
-      console.log('volumePlusDisplayMusic', e);
-    }
-  };
-
-  const volumeMinusDisplayMusic = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(VOLUME_MINUS_MUSIC),
-      );
-    } catch (e) {
-      console.log('volumeMinusDisplayMusic', e);
-    }
-  };
-
-  // ====== WRITE_WITHOUT_RESPONSE GENERAL ACTION TO CONTROL THE DEVICE ======
-  const powerOffDisplay = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(POWER_OFF),
-      );
-    } catch (e) {
-      console.log('powerOffDisplay', e);
-    }
-  };
-
-  // ====== WRITE_WITHOUT_RESPONSE MOVEMENT TO CONTROL THE DEVICE ======
-  const swingOnDisplay = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(SWING_ON),
-      );
-    } catch (e) {
-      console.log('swingOnDisplay', e);
-    }
-  };
-
-  const swingOffDisplay = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(SWING_OFF),
-      );
-    } catch (e) {
-      console.log('swingOffDisplay', e);
-    }
-  };
-
-  const swingSwitchOMode = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(SWING_MODE_O),
-      );
-    } catch (e) {
-      console.log('swingSwitchOMode', e);
-    }
-  };
-
-  const swingSwitchUMode = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(SWING_MODE_U),
-      );
-    } catch (e) {
-      console.log('swingSwitchUMode', e);
-    }
-  };
-
-  const swingSwitchMMode = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(SWING_MODE_M),
-      );
-    } catch (e) {
-      console.log('swingSwitchMMode', e);
-    }
-  };
-
-  const swingSwitch8Mode = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(SWING_MODE_8),
-      );
-    } catch (e) {
-      console.log('swingSwitch8Mode', e);
-    }
-  };
-
-  const swingSwitchHMode = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(SWING_MODE_H),
-      );
-    } catch (e) {
-      console.log('swingSwitchHMode', e);
-    }
-  };
-
-  const swingSwitchVMode = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(SWING_MODE_V),
-      );
-    } catch (e) {
-      console.log('swingSwitchVMode', e);
-    }
-  };
-
-  const swingSwitchMixMode = async device => {
-    try {
-      await bleManager.writeCharacteristicWithoutResponseForDevice(
-        device.id,
-        PRIMARY_SERVICE_AE00_UUID,
-        CHARACTERISTIC_AE01_WRITE_WITHOUT_RESPONSE_UUID,
-        hexToBase64(SWING_MODE_MIX),
-      );
-    } catch (e) {
-      console.log('swingSwitchMixMode', e);
+      console.log('swingActionDisplay', e);
     }
   };
 
@@ -353,21 +186,7 @@ export default function useBLE() {
     connectToDevice,
     scanForDevices,
     disconnectFromDevice,
-    previousMusicDisplayMusic,
-    nextMusicDisplayMusic,
-    playPauseDisplayMusic,
-    volumePlusDisplayMusic,
-    volumeMinusDisplayMusic,
-    powerOffDisplay,
-    swingOnDisplay,
-    swingOffDisplay,
-    swingSwitchOMode,
-    swingSwitchUMode,
-    swingSwitchMMode,
-    swingSwitch8Mode,
-    swingSwitchHMode,
-    swingSwitchVMode,
-    swingSwitchMixMode,
+    swingActionDisplay,
     allDevices,
     currentDevice,
     status,

@@ -7,7 +7,33 @@ import {
   View,
 } from 'react-native';
 
-import useBLE from './useBLE';
+import useBLE, {
+  CRY_DETECTION_SWITCH,
+  NEXT_MUSIC,
+  PLAY_PAUSE_MUSIC,
+  POWER_OFF,
+  PREVIOUS_MUSIC,
+  SPEED_1,
+  SPEED_2,
+  SPEED_3,
+  SPEED_4,
+  SPEED_5,
+  SWING_MODE_8,
+  SWING_MODE_H,
+  SWING_MODE_M,
+  SWING_MODE_MIX,
+  SWING_MODE_O,
+  SWING_MODE_U,
+  SWING_MODE_V,
+  SWING_OFF,
+  SWING_ON,
+  TIMER_10_MIN,
+  TIMER_20_MIN,
+  TIMER_30_MIN,
+  TIMER_NONE,
+  VOLUME_MINUS_MUSIC,
+  VOLUME_PLUS_MUSIC,
+} from './useBLE';
 
 function App() {
   const {
@@ -15,21 +41,7 @@ function App() {
     connectToDevice,
     scanForDevices,
     disconnectFromDevice,
-    previousMusicDisplayMusic,
-    nextMusicDisplayMusic,
-    playPauseDisplayMusic,
-    volumePlusDisplayMusic,
-    volumeMinusDisplayMusic,
-    powerOffDisplay,
-    swingOnDisplay,
-    swingOffDisplay,
-    swingSwitchOMode,
-    swingSwitchUMode,
-    swingSwitchMMode,
-    swingSwitch8Mode,
-    swingSwitchHMode,
-    swingSwitchVMode,
-    swingSwitchMixMode,
+    swingActionDisplay,
     allDevices,
     currentDevice,
     status,
@@ -65,20 +77,20 @@ function App() {
         </TouchableOpacity>
       )}
       {/* ====== GENERAL ACTION ====== */}
-      {allDevices.length !== 0 && (
+      {/* {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            powerOffDisplay(allDevices[0]);
+            swingActionDisplay(allDevices[0], POWER_OFF);
           }}
           style={styles.ctaOFFButton}>
           <Text style={styles.ctaButtonText}>Power Off</Text>
         </TouchableOpacity>
-      )}
+      )} */}
       {/* ====== MUSIC ====== */}
-      {allDevices.length !== 0 && (
+      {/* {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            previousMusicDisplayMusic(allDevices[0]);
+            swingActionDisplay(allDevices[0], PREVIOUS_MUSIC);
           }}
           style={styles.ctaButton}>
           <Text style={styles.ctaButtonText}>Previous music</Text>
@@ -87,7 +99,7 @@ function App() {
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            nextMusicDisplayMusic(allDevices[0]);
+            swingActionDisplay(allDevices[0], NEXT_MUSIC);
           }}
           style={styles.ctaButton}>
           <Text style={styles.ctaButtonText}>Next music</Text>
@@ -96,16 +108,16 @@ function App() {
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            playPauseDisplayMusic(allDevices[0]);
+            swingActionDisplay(allDevices[0], PLAY_PAUSE_MUSIC);
           }}
           style={styles.ctaButton}>
-          <Text style={styles.ctaButtonText}>Play Stop music</Text>
+          <Text style={styles.ctaButtonText}>Play Pause music</Text>
         </TouchableOpacity>
       )}
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            volumePlusDisplayMusic(allDevices[0]);
+            swingActionDisplay(allDevices[0], VOLUME_PLUS_MUSIC);
           }}
           style={styles.ctaButton}>
           <Text style={styles.ctaButtonText}>Volume +</Text>
@@ -114,17 +126,17 @@ function App() {
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            volumeMinusDisplayMusic(allDevices[0]);
+            swingActionDisplay(allDevices[0], VOLUME_MINUS_MUSIC);
           }}
           style={styles.ctaButton}>
           <Text style={styles.ctaButtonText}>Volume -</Text>
         </TouchableOpacity>
-      )}
+      )} */}
       {/* ====== MOVEMENT ====== */}
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            swingOnDisplay(allDevices[0]);
+            swingActionDisplay(allDevices[0], SWING_ON);
           }}
           style={styles.ctaMovementButton}>
           <Text style={styles.ctaButtonText}>Swing on or N</Text>
@@ -133,7 +145,7 @@ function App() {
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            swingOffDisplay(allDevices[0]);
+            swingActionDisplay(allDevices[0], SWING_OFF);
           }}
           style={styles.ctaMovementButton}>
           <Text style={styles.ctaButtonText}>Swing off</Text>
@@ -142,7 +154,7 @@ function App() {
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            swingSwitchOMode(allDevices[0]);
+            swingActionDisplay(allDevices[0], SWING_MODE_O);
           }}
           style={styles.ctaMovementButton}>
           <Text style={styles.ctaButtonText}>Swing switch O</Text>
@@ -151,16 +163,16 @@ function App() {
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            swingSwitchUMode(allDevices[0]);
+            swingActionDisplay(allDevices[0], SWING_MODE_U);
           }}
           style={styles.ctaMovementButton}>
           <Text style={styles.ctaButtonText}>Swing switch U</Text>
         </TouchableOpacity>
       )}
-      {allDevices.length !== 0 && (
+      {/* {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            swingSwitchMMode(allDevices[0]);
+            swingActionDisplay(allDevices[0], SWING_MODE_M);
           }}
           style={styles.ctaMovementButton}>
           <Text style={styles.ctaButtonText}>Swing switch M</Text>
@@ -169,7 +181,7 @@ function App() {
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            swingSwitch8Mode(allDevices[0]);
+            swingActionDisplay(allDevices[0], SWING_MODE_8);
           }}
           style={styles.ctaMovementButton}>
           <Text style={styles.ctaButtonText}>Swing switch 8</Text>
@@ -178,7 +190,7 @@ function App() {
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            swingSwitchHMode(allDevices[0]);
+            swingActionDisplay(allDevices[0], SWING_MODE_H);
           }}
           style={styles.ctaMovementButton}>
           <Text style={styles.ctaButtonText}>Swing switch H</Text>
@@ -187,7 +199,7 @@ function App() {
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            swingSwitchVMode(allDevices[0]);
+            swingActionDisplay(allDevices[0], SWING_MODE_V);
           }}
           style={styles.ctaMovementButton}>
           <Text style={styles.ctaButtonText}>Swing switch V</Text>
@@ -196,10 +208,107 @@ function App() {
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            swingSwitchMixMode(allDevices[0]);
+            swingActionDisplay(allDevices[0], SWING_MODE_MIX);
           }}
           style={styles.ctaMovementButton}>
           <Text style={styles.ctaButtonText}>Swing switch Mix</Text>
+        </TouchableOpacity>
+      )} */}
+      {/* ====== SPEED ====== */}
+      {/* {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingActionDisplay(allDevices[0], SPEED_1);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing speed 1</Text>
+        </TouchableOpacity>
+      )} 
+
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingActionDisplay(allDevices[0], SPEED_2);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing speed 2</Text>
+        </TouchableOpacity>
+      )}
+
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingActionDisplay(allDevices[0], SPEED_3);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing speed 3</Text>
+        </TouchableOpacity>
+      )}
+
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingActionDisplay(allDevices[0], SPEED_4);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing speed 4</Text>
+        </TouchableOpacity>
+      )}
+
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingActionDisplay(allDevices[0], SPEED_5);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing speed 5</Text>
+        </TouchableOpacity>
+      )} */}
+      {/* ====== TIMER ====== */}
+      {/* {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingActionDisplay(allDevices[0], TIMER_NONE);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Timer none</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingActionDisplay(allDevices[0], TIMER_10_MIN);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Timer 10</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingActionDisplay(allDevices[0], TIMER_20_MIN);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Timer 20</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingActionDisplay(allDevices[0], TIMER_30_MIN);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Timer 30</Text>
+        </TouchableOpacity>
+      )} */}
+      {/* ====== CRY DETECTION SWITCH ====== */}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingActionDisplay(allDevices[0], CRY_DETECTION_SWITCH);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Cry detection button</Text>
         </TouchableOpacity>
       )}
 
