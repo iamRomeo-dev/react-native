@@ -6,10 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-// import {Device} from 'react-native-ble-plx';
 
-import DeviceModal from './DeviceConnectionModal';
-import {Toto} from './Toto';
 import useBLE from './useBLE';
 
 function App() {
@@ -18,11 +15,24 @@ function App() {
     connectToDevice,
     scanForDevices,
     disconnectFromDevice,
-    startDisplayMusic,
+    previousMusicDisplayMusic,
+    nextMusicDisplayMusic,
+    playPauseDisplayMusic,
+    volumePlusDisplayMusic,
+    volumeMinusDisplayMusic,
+    powerOffDisplay,
+    swingOnDisplay,
+    swingOffDisplay,
+    swingSwitchOMode,
+    swingSwitchUMode,
+    swingSwitchMMode,
+    swingSwitch8Mode,
+    swingSwitchHMode,
+    swingSwitchVMode,
+    swingSwitchMixMode,
     allDevices,
     currentDevice,
     status,
-    heartRate,
   } = useBLE();
 
   const openModal = async () => {
@@ -54,14 +64,142 @@ function App() {
           </Text>
         </TouchableOpacity>
       )}
-
+      {/* ====== GENERAL ACTION ====== */}
       {allDevices.length !== 0 && (
         <TouchableOpacity
           onPress={() => {
-            startDisplayMusic(allDevices[0]);
+            powerOffDisplay(allDevices[0]);
+          }}
+          style={styles.ctaOFFButton}>
+          <Text style={styles.ctaButtonText}>Power Off</Text>
+        </TouchableOpacity>
+      )}
+      {/* ====== MUSIC ====== */}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            previousMusicDisplayMusic(allDevices[0]);
           }}
           style={styles.ctaButton}>
-          <Text style={styles.ctaButtonText}>Play music</Text>
+          <Text style={styles.ctaButtonText}>Previous music</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            nextMusicDisplayMusic(allDevices[0]);
+          }}
+          style={styles.ctaButton}>
+          <Text style={styles.ctaButtonText}>Next music</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            playPauseDisplayMusic(allDevices[0]);
+          }}
+          style={styles.ctaButton}>
+          <Text style={styles.ctaButtonText}>Play Stop music</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            volumePlusDisplayMusic(allDevices[0]);
+          }}
+          style={styles.ctaButton}>
+          <Text style={styles.ctaButtonText}>Volume +</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            volumeMinusDisplayMusic(allDevices[0]);
+          }}
+          style={styles.ctaButton}>
+          <Text style={styles.ctaButtonText}>Volume -</Text>
+        </TouchableOpacity>
+      )}
+      {/* ====== MOVEMENT ====== */}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingOnDisplay(allDevices[0]);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing on or N</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingOffDisplay(allDevices[0]);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing off</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingSwitchOMode(allDevices[0]);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing switch O</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingSwitchUMode(allDevices[0]);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing switch U</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingSwitchMMode(allDevices[0]);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing switch M</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingSwitch8Mode(allDevices[0]);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing switch 8</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingSwitchHMode(allDevices[0]);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing switch H</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingSwitchVMode(allDevices[0]);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing switch V</Text>
+        </TouchableOpacity>
+      )}
+      {allDevices.length !== 0 && (
+        <TouchableOpacity
+          onPress={() => {
+            swingSwitchMixMode(allDevices[0]);
+          }}
+          style={styles.ctaMovementButton}>
+          <Text style={styles.ctaButtonText}>Swing switch Mix</Text>
         </TouchableOpacity>
       )}
 
@@ -115,6 +253,24 @@ export const styles = StyleSheet.create({
   },
   ctaButton: {
     backgroundColor: 'purple',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 50,
+    marginHorizontal: 20,
+    marginBottom: 5,
+    borderRadius: 8,
+  },
+  ctaOFFButton: {
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 50,
+    marginHorizontal: 20,
+    marginBottom: 5,
+    borderRadius: 8,
+  },
+  ctaMovementButton: {
+    backgroundColor: '#D79A2B',
     justifyContent: 'center',
     alignItems: 'center',
     height: 50,
